@@ -1,7 +1,7 @@
 BSD grep from FreeBSD for Linux.
 
-Imported from [freebsd-src][src], commit caf5283 (Sep 2023); this became the
-default `grep` in the [upcoming FreeBSD 13 release][commit]:
+Imported from [freebsd-src], commit caf5283 (Sep 2023); this became the default
+`grep` in [FreeBSD 13]:
 
 > Switch to the BSDL grep implementation now that it's been a little more
 > thoroughly tested and theoretically supports all of the extensions that
@@ -18,5 +18,5 @@ install` to install it.
 
 TODO: port the tests as well.
 
-[src]: https://github.com/freebsd/freebsd-src/tree/main/usr.bin/grep
-[commit]: https://cgit.freebsd.org/src/commit/?id=b82a9ec5f53e
+[freebsd-src]: https://github.com/freebsd/freebsd-src/tree/main/usr.bin/grep
+[FreeBSD 13]: https://cgit.freebsd.org/src/commit/?id=b82a9ec5f53e

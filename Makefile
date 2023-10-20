@@ -1,9 +1,9 @@
 .POSIX:
-CC=cc
-CFLAGS=-std=c99 -pedantic -Wall -O2
-PREFIX=/usr/local
+CC     = cc
+CFLAGS = -std=c99 -pedantic -Wall -O2
+PREFIX = /usr/local
 
-.PHONY: clean
+.PHONY: all clean install
 
 all:
 	${CC} ${CFLAGS} ${LDFLAGS} -D_GNU_SOURCE=1 -o grep *.c
