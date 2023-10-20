@@ -8,6 +8,7 @@ done
 for f in fts.c fts.h; do
 	curl -sLO https://raw.githubusercontent.com/void-linux/musl-fts/master/$f
 done
+curl -sLO 'https://gitlab.freedesktop.org/libbsd/libbsd/-/raw/main/src/progname.c?ref_type=heads'
 
 sed -Ei '/^#include <(bzlib|zlib|sys\/cdefs|sys\/queue)\.h>$/d' *.c *.h
 sed -i  's/#include <fts.h>/#include "fts.h"/' *.c

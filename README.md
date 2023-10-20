@@ -16,7 +16,10 @@ Imported from [freebsd-src], commit caf5283 (Sep 2023); this became the default
 Run `update.sh` to update the sources, and use the standard `make` and `make
 install` to install it.
 
-TODO: port the tests as well.
+Only `[efr]?grep` is installed by default; use `make install-zgrep` to install
+`zgrep` and all the many links to it (`bzgrep`, `zfgrep`, `zstdegrep`, etc.).
+
+`make check` runs the tests (`zsh` is required).
 
 [freebsd-src]: https://github.com/freebsd/freebsd-src/tree/main/usr.bin/grep
 [FreeBSD 13]: https://cgit.freebsd.org/src/commit/?id=b82a9ec5f53e

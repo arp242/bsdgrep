@@ -1,3 +1,5 @@
+#include <errno.h>
+
 const char * getprogname(void) {
-	return "grep";
+	return program_invocation_short_name;
 }
