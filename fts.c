@@ -50,9 +50,7 @@ __RCSID("$NetBSD: fts.c,v 1.48 2015/01/29 15:55:21 manu Exp $");
 #include <string.h>
 #include <unistd.h>
 
-#if !defined(HAVE_DECL_MAX) || (HAVE_DECL_MAX==0)
-#define MAX(a,b) ((a)>(b)?(a):(b))
-#endif
+#define MAX_(a,b) ((a)>(b)?(a):(b))
 
 #if !defined(UINT_MAX) && (HAVE_DECL_UINTMAX_MAX==1)
 #define UINT_MAX UINTMAX_MAX
@@ -155,7 +153,7 @@ fts_open(char * const *argv, int options,
 	 * Start out with 1K of path space, and enough, in any case,
 	 * to hold the user's paths.
 	 */
-	if (fts_palloc(sp, MAX(fts_maxarglen(argv), MAXPATHLEN)))
+	if (fts_palloc(sp, MAX_(fts_maxarglen(argv), MAXPATHLEN)))
 		goto mem1;
 
 	/* Allocate/initialize root's parent. */
