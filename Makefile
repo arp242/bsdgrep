@@ -1,6 +1,7 @@
-CC?=cc
-CFLAGS+=-std=c99 -pedantic -Wall -O2
-PREFIX?=/usr/local
+.POSIX:
+CC=cc
+CFLAGS=-std=c99 -pedantic -Wall -O2
+PREFIX=/usr/local
 
 .PHONY: clean
 
@@ -13,10 +14,9 @@ clean:
 install:
 	install -Dm755 grep     ${DESTDIR}${PREFIX}/bin/grep
 	install -Dm755 zgrep.sh ${DESTDIR}${PREFIX}/bin/zgrep
-
+	
 	install -Dm644 grep.1 ${DESTDIR}${PREFIX}/share/man/man1/grep.1
 	install -Dm644 zgrep.1 ${DESTDIR}${PREFIX}/share/man/man1/zgrep.1
-
 	cd ${DESTDIR}${PREFIX}/bin && ( \
 		ln -sf grep  egrep     ;\
 		ln -sf grep  fgrep     ;\
@@ -36,7 +36,6 @@ install:
 		ln -sf zgrep zstdegrep ;\
 		ln -sf zgrep zstdfgrep ;\
 	)
-
 	cd ${DESTDIR}${PREFIX}/share/man/man1 && ( \
 		ln -sf grep.1 egrep.1      ;\
 		ln -sf grep.1 fgrep.1      ;\

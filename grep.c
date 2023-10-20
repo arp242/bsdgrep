@@ -31,7 +31,6 @@
  * SUCH DAMAGE.
  */
 
-#include <sys/cdefs.h>
 #include "freebsd.h"
 __FBSDID("$FreeBSD$");
 
@@ -68,7 +67,7 @@ const char	*errstr[] = {
 
 /* Flags passed to regcomp() and regexec() */
 int		 cflags = REG_NOSUB | REG_NEWLINE;
-int		 eflags = REG_STARTEND;
+int		 eflags = 4 /*REG_STARTEND*/;
 
 /* XXX TODO: Get rid of this flag.
  * matchall is a gross hack that means that an empty pattern was passed to us.
