@@ -1,11 +1,10 @@
 /*	$NetBSD: grep.c,v 1.6 2011/04/18 03:48:23 joerg Exp $	*/
-/* 	$FreeBSD$	*/
 /*	$OpenBSD: grep.c,v 1.42 2010/07/02 22:18:03 tedu Exp $	*/
 
 /*-
- * SPDX-License-Identifier: BSD-2-Clause-FreeBSD
+ * SPDX-License-Identifier: BSD-2-Clause
  *
- * Copyright (c) 1999 James Howard and Dag-Erling Coïdan Smørgrav
+ * Copyright (c) 1999 James Howard and Dag-Erling Smørgrav
  * Copyright (C) 2008-2009 Gabor Kovesdan <gabor@FreeBSD.org>
  * All rights reserved.
  *
@@ -31,9 +30,6 @@
  * SUCH DAMAGE.
  */
 
-#include "freebsd.h"
-__FBSDID("$FreeBSD$");
-
 #include <sys/stat.h>
 #include <sys/types.h>
 
@@ -52,14 +48,15 @@ __FBSDID("$FreeBSD$");
 #include <unistd.h>
 
 #include "grep.h"
+#include "freebsd.h"
 
 const char	*errstr[] = {
 	"",
 /* 1*/	"(standard input)",
 /* 2*/	"unknown %s option",
-/* 3*/	"usage: %s [-abcDEFGHhIiLlmnOoPqRSsUVvwxz] [-A num] [-B num] [-C[num]]\n",
+/* 3*/	"usage: %s [-abcDEFGHhIiLlmnOopqRSsUVvwxz] [-A num] [-B num] [-C num]\n",
 /* 4*/	"\t[-e pattern] [-f file] [--binary-files=value] [--color=when]\n",
-/* 5*/	"\t[--context[=num]] [--directories=action] [--label] [--line-buffered]\n",
+/* 5*/	"\t[--context=num] [--directories=action] [--label] [--line-buffered]\n",
 /* 6*/	"\t[--null] [pattern] [file ...]\n",
 /* 7*/	"Binary file %s matches\n",
 /* 8*/	"%s (BSD grep, GNU compatible) %s\n",
@@ -67,15 +64,8 @@ const char	*errstr[] = {
 
 /* Flags passed to regcomp() and regexec() */
 int		 cflags = REG_NOSUB | REG_NEWLINE;
-int		 eflags = 4 /*REG_STARTEND*/;
+int		 eflags = REG_STARTEND;
 
-/* XXX TODO: Get rid of this flag.
- * matchall is a gross hack that means that an empty pattern was passed to us.
- * It is a necessary evil at the moment because our regex(3) implementation
- * does not allow for empty patterns, as supported by POSIX's definition of
- * grammar for BREs/EREs. When libregex becomes available, it would be wise
- * to remove this and let regex(3) handle the dirty details of empty patterns.
- */
 bool		 matchall;
 
 /* Searching patterns */
@@ -117,7 +107,7 @@ bool	 lbflag;	/* --line-buffered */
 bool	 nullflag;	/* --null */
 char	*label;		/* --label */
 const char *color;	/* --color */
-int	 grepbehave = GREP_BASIC;	/* -EFGP: type of the regex */
+int	 grepbehave = GREP_BASIC;	/* -EFG: type of the regex */
 int	 binbehave = BINFILE_BIN;	/* -aIU: handling of binary files */
 int	 filebehave = FILE_STDIO;
 int	 devbehave = DEV_READ;		/* -D: handling of devices */
@@ -159,7 +149,7 @@ usage(void)
 	exit(2);
 }
 
-static const char	*optstr = "0123456789A:B:C:D:EFGHILOPSRUVabcd:e:f:hilm:nopqrsuvwxyz";
+static const char	*optstr = "0123456789A:B:C:D:EFGHILOSRUVabcd:e:f:hilm:nopqrsuvwxyz";
 
 static const struct option long_options[] =
 {
@@ -569,6 +559,7 @@ main(int argc, char *argv[])
 			break;
 		case 'z':
 			fileeol = '\0';
+			cflags &= ~REG_NEWLINE;
 			break;
 		case BIN_OPT:
 			if (strcasecmp("binary", optarg) == 0)
@@ -637,9 +628,9 @@ main(int argc, char *argv[])
 	aargc -= optind;
 	aargv += optind;
 
-	/* Empty pattern file matches nothing */
-	if (!needpattern && (patterns == 0) && !matchall)
-		exit(1);
+	/* xflag takes precedence, don't confuse the matching bits. */
+	if (wflag && xflag)
+		wflag = false;
 
 	/* Fail if we don't have any pattern */
 	if (aargc == 0 && needpattern)
@@ -667,6 +658,7 @@ main(int argc, char *argv[])
 		 * internal literal matcher should be used. Other cflags that have
 		 * the same interpretation as REG_NOSPEC and REG_LITERAL should be
 		 * similarly added here, and grep.h should be amended to take this into
+#include "freebsd.h"
 		 * consideration when defining WITH_INTERNAL_NOSPEC.
 		 */
 #if defined(REG_NOSPEC)

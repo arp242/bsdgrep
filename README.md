@@ -1,6 +1,6 @@
 BSD grep from FreeBSD for Linux.
 
-Imported from [freebsd-src][src], commit d1c965f (26 Dec 2020); this will be the
+Imported from [freebsd-src][src], commit caf5283 (Sep 2023); this became the
 default `grep` in the [upcoming FreeBSD 13 release][commit]:
 
 > Switch to the BSDL grep implementation now that it's been a little more

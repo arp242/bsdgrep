@@ -23,4 +23,9 @@ const char * getprogname(void);
 #define MAP_NOCORE 0
 #define MAP_NOSYNC 0
 
+// https://github.com/freebsd/freebsd-src/blob/42b3884/include/regex.h#L100
+#ifndef REG_STARTEND
+#define REG_STARTEND 4
+#endif
+
 #endif

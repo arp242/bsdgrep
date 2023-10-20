@@ -2,17 +2,10 @@
 
 set -eu
 
-IFS='
-'
-
-# Get all files except the Makefile
-# https://raw.githubusercontent.com/freebsd/freebsd-src/main/usr.bin/grep/Makefile.depend
-for f in $(curl -s 'https://github.com/freebsd/freebsd-src/tree/main/usr.bin/grep' |
-	grep -Eo 'href="/freebsd/freebsd-src/blob/main/usr\.bin/grep/[^M].*?"');
-do
-	f=$(basename "${f%\"}")
-	echo "$f"
-	curl -s "https://raw.githubusercontent.com/freebsd/freebsd-src/main/usr.bin/grep/$f" > "$f"
+for f in file.c grep.1 grep.c grep.h queue.c util.c zgrep.sh zgrep.1; do
+	curl -sLO https://raw.githubusercontent.com/freebsd/freebsd-src/main/usr.bin/grep/$f
 done
 
-sed -i '/^__FBSDID/i #include "freebsd.h"' *.c
+sed -Ei '/^#include <(bzlib|zlib|sys\/cdefs|sys\/queue)\.h>$/d' *.c *.h
+sed -i  's/#include <fts.h>/#include "fts.h"/' *.c
+sed -i  '/grep\.h/a #include "freebsd.h"' file.c grep.c queue.c util.c

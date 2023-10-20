@@ -1,5 +1,4 @@
 .\"	$NetBSD: grep.1,v 1.2 2011/02/16 01:31:33 joerg Exp $
-.\"	$FreeBSD$
 .\"	$OpenBSD: grep.1,v 1.38 2010/04/05 06:30:59 jmc Exp $
 .\" Copyright (c) 1980, 1990, 1993
 .\"	The Regents of the University of California.  All rights reserved.
@@ -30,7 +29,7 @@
 .\"
 .\"	@(#)grep.1	8.3 (Berkeley) 4/18/94
 .\"
-.Dd November 19, 2020
+.Dd December 18, 2022
 .Dt GREP 1
 .Os
 .Sh NAME
@@ -45,13 +44,13 @@
 .Op Fl abcdDEFGHhIiLlmnOopqRSsUVvwxz
 .Op Fl A Ar num
 .Op Fl B Ar num
-.Op Fl C Ns Op Ar num
+.Op Fl C Ar num
 .Op Fl e Ar pattern
 .Op Fl f Ar file
 .Op Fl Fl binary-files= Ns Ar value
 .Op Fl Fl color Ns Op Cm = Ns Ar when
 .Op Fl Fl colour Ns Op Cm = Ns Ar when
-.Op Fl Fl context Ns Op Cm = Ns Ar num
+.Op Fl Fl context= Ns Ar num
 .Op Fl Fl label
 .Op Fl Fl line-buffered
 .Op Fl Fl null
@@ -123,18 +122,15 @@ options.
 .It Fl b , Fl Fl byte-offset
 The offset in bytes of a matched pattern is
 displayed in front of the respective matched line.
-.It Fl C Ns Oo Ar num Oc , Fl Fl context Ns Oo = Ns Ar num Oc
+.It Fl C Ar num , Fl Fl context= Ns Ar num
 Print
 .Ar num
 lines of leading and trailing context surrounding each match.
-The default value of
-.Ar num
-is
-.Dq 2
-and is equivalent to
-.Dq Fl A Ar 2 Fl B Ar 2 .
-Note:
-no whitespace may be given between the option and its argument.
+See also the
+.Fl A
+and
+.Fl B
+options.
 .It Fl c , Fl Fl count
 Only a count of selected lines is written to standard output.
 .It Fl Fl colour= Ns Oo Ar when Oc , Fl Fl color= Ns Oo Ar when Oc
@@ -268,7 +264,7 @@ Print a brief help message.
 .It Fl I
 Ignore binary files.
 This option is equivalent to the
-.Dq Fl Fl binary-file= Ns Cm without-match
+.Dq Fl Fl binary-files= Ns Cm without-match
 option.
 .It Fl i , Fl Fl ignore-case
 Perform case insensitive matching.
@@ -405,6 +401,9 @@ and
 .Sq [[:>:]] ;
 see
 .Xr re_format 7 ) .
+This option has no effect if
+.Fl x
+is also specified.
 .It Fl x , Fl Fl line-regexp
 Only input lines selected against an entire fixed string or regular
 expression are considered to be matching lines.
@@ -440,6 +439,22 @@ read from standard input.
 This includes both
 .Fl f
 and file arguments.
+.Sh ENVIRONMENT
+The following environment variables affect the execution of
+.Nm :
+.Bl -tag -width "GREP_OPTIONS"
+.It Ev GREP_COLOR
+This variable specifies the color used to highlight matched (non-empty) text.
+.It Ev GREP_OPTIONS
+This variable specifies default options
+to be placed in front of any explicit options.
+It may cause problems with portable scripts.
+.It Ev TERM
+This variable specifies the type name of the terminal, console or display-device
+type to be used.
+See
+.Xr term 7 .
+.El
 .Sh EXIT STATUS
 The
 .Nm grep
@@ -515,11 +530,11 @@ Do the search recursively from the
 .Pa /usr/src/sys/arm
 directory
 .Pp
-.Dl $ grep -H -R FIXME --include=*.h /usr/src/sys/arm/
+.Dl $ grep -H -R FIXME --include="*.h" /usr/src/sys/arm/
 .It
 Same as above but show only the name of the matching file:
 .Pp
-.Dl $ grep -l -R FIXME --include=*.h /usr/src/sys/arm/
+.Dl $ grep -l -R FIXME --include="*.h" /usr/src/sys/arm/
 .It
 Show lines containing the text
 .Sq foo .
@@ -558,7 +573,7 @@ utility is compliant with the
 specification.
 .Pp
 The flags
-.Op Fl AaBbCDdGHhILmoPRSUVw
+.Op Fl AaBbCDdGHhILmopRSUVw
 are extensions to that specification, and the behaviour of the
 .Fl f
 flag when used with an empty pattern file is left undefined.

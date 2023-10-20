@@ -1,11 +1,10 @@
 /*	$NetBSD: file.c,v 1.5 2011/02/16 18:35:39 joerg Exp $	*/
-/*	$FreeBSD$	*/
 /*	$OpenBSD: file.c,v 1.11 2010/07/02 20:48:48 nicm Exp $	*/
 
 /*-
- * SPDX-License-Identifier: BSD-2-Clause-FreeBSD
+ * SPDX-License-Identifier: BSD-2-Clause
  *
- * Copyright (c) 1999 James Howard and Dag-Erling Coïdan Smørgrav
+ * Copyright (c) 1999 James Howard and Dag-Erling Smørgrav
  * Copyright (C) 2008-2010 Gabor Kovesdan <gabor@FreeBSD.org>
  * Copyright (C) 2010 Dimitry Andric <dimitry@andric.com>
  * All rights reserved.
@@ -32,9 +31,6 @@
  * SUCH DAMAGE.
  */
 
-#include "freebsd.h"
-__FBSDID("$FreeBSD$");
-
 #include <sys/param.h>
 #include <sys/mman.h>
 #include <sys/stat.h>
@@ -51,6 +47,7 @@ __FBSDID("$FreeBSD$");
 #include <wctype.h>
 
 #include "grep.h"
+#include "freebsd.h"
 
 #define	MAXBUFSIZ	(32 * 1024)
 #define	LNBUFBUMP	80
@@ -75,6 +72,8 @@ grep_refill(struct file *f)
 	bufrem = 0;
 
 	nr = read(f->fd, buffer, MAXBUFSIZ);
+	if (nr < 0 && errno == EISDIR)
+		nr = 0;
 	if (nr < 0)
 		return (-1);
 
@@ -98,7 +97,6 @@ char *
 grep_fgetln(struct file *f, struct parsec *pc)
 {
 	char *p;
-	char *ret;
 	size_t len;
 	size_t off;
 	ptrdiff_t diff;
@@ -116,12 +114,15 @@ grep_fgetln(struct file *f, struct parsec *pc)
 	/* Look for a newline in the remaining part of the buffer */
 	if ((p = memchr(bufpos, fileeol, bufrem)) != NULL) {
 		++p; /* advance over newline */
-		ret = bufpos;
 		len = p - bufpos;
+		if (grep_lnbufgrow(len + 1))
+			goto error;
+		memcpy(lnbuf, bufpos, len);
 		bufrem -= len;
 		bufpos = p;
 		pc->ln.len = len;
-		return (ret);
+		lnbuf[len] = '\0';
+		return (lnbuf);
 	}
 
 	/* We have to copy the current buffered data to the line buffer */
@@ -148,7 +149,7 @@ grep_fgetln(struct file *f, struct parsec *pc)
 		++p;
 		diff = p - bufpos;
 		len += diff;
-		if (grep_lnbufgrow(len))
+		if (grep_lnbufgrow(len + 1))
 		    goto error;
 		memcpy(lnbuf + off, bufpos, diff);
 		bufrem -= diff;
@@ -156,6 +157,7 @@ grep_fgetln(struct file *f, struct parsec *pc)
 		break;
 	}
 	pc->ln.len = len;
+	lnbuf[len] = '\0';
 	return (lnbuf);
 
 error:
@@ -183,8 +185,7 @@ grep_open(const char *path)
 	if (filebehave == FILE_MMAP) {
 		struct stat st;
 
-		if ((fstat(f->fd, &st) == -1) || (st.st_size > OFF_MAX) ||
-		    (!S_ISREG(st.st_mode)))
+		if (fstat(f->fd, &st) == -1 || !S_ISREG(st.st_mode))
 			filebehave = FILE_STDIO;
 		else {
 			int flags = MAP_PRIVATE | MAP_NOCORE | MAP_NOSYNC;
