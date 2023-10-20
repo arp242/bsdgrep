@@ -77,7 +77,7 @@ test-basic_body() {
 
 # Checks handling of binary files
 test-binary_body() {
-	dd if=/dev/zero count=1 of=test.file
+	dd if=/dev/zero count=1 of=test.file status=none
 	echo -n "foobar" >> test.file
 
 	have=$($grep foobar test.file 2>&1)

@@ -1,21 +1,21 @@
 .POSIX:
-CC     = cc
-CFLAGS = -std=c99 -pedantic -Wall -O2
-PREFIX = /usr/local
+CC     ?= cc
+PREFIX ?= /usr/local
+CFLAGS ?= -O2
 
 .PHONY: all clean check install install-extra
 
 all:
-	${CC} ${CFLAGS} ${LDFLAGS} -D_GNU_SOURCE=1 -o grep *.c
+	${CC} -std=c99 -pedantic -Wall -D_GNU_SOURCE=1 ${CFLAGS} ${LDFLAGS} -o grep *.c
 
 clean:
 	rm -f grep egrep fgrep rgrep
 
 check: all
-	@./test.zsh
+	@./test.zsh ${CHECK}
 
 install:
-	install -Dm755 grep     ${DESTDIR}${PREFIX}/bin/grep
+	install -Dm755 grep ${DESTDIR}${PREFIX}/bin/grep
 	cd ${DESTDIR}${PREFIX}/bin && ( \
 		ln -sf grep  egrep     ;\
 		ln -sf grep  fgrep     ;\

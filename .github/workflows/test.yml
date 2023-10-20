@@ -3,10 +3,16 @@ on:
   pull_request: {"branches": ["master"]}
 
 jobs:
-  build:
+  test-gnu:
     runs-on: 'ubuntu-latest'
     steps:
     - uses: 'actions/checkout@v3'
     - run: 'sudo apt-get install -y zsh'
-    - run: 'make'
-    - run: 'make check'
+    - run: 'CHECK=-v make check'
+
+  test-musl:
+    runs-on: 'ubuntu-latest'
+    steps:
+    - uses: 'actions/checkout@v3'
+    - run: 'sudo apt-get install -y zsh musl-tools'
+    - run: 'CC=musl-gcc CHECK=-v make check'
