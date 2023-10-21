@@ -31,7 +31,12 @@
  */
 
 #include <limits.h>
-#include <regex.h>
+#ifdef WITH_PCRE
+#  include <pcre2posix.h>
+#else
+#  include <regex.h>
+#endif
+
 #include <stdbool.h>
 #include <stdio.h>
 
@@ -43,7 +48,7 @@ extern const char		*errstr[];
 #define	GREP_BASIC	1
 #define	GREP_EXTENDED	2
 
-#if !defined(REG_NOSPEC) && !defined(REG_LITERAL)
+#if (!defined(REG_NOSPEC) && !defined(REG_LITERAL)) || defined(WITH_PCRE)
 #define WITH_INTERNAL_NOSPEC
 #endif
 

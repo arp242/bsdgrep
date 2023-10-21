@@ -21,5 +21,7 @@ Only `[efr]?grep` is installed by default; use `make install-zgrep` to install
 
 `make check` runs the tests (`zsh` is required).
 
+On musl it will compile against PCRE because musl doesn't support REG_STARTEND.
+
 [freebsd-src]: https://github.com/freebsd/freebsd-src/tree/main/usr.bin/grep
 [FreeBSD 13]: https://cgit.freebsd.org/src/commit/?id=b82a9ec5f53e

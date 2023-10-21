@@ -1,0 +1,61 @@
+#!/bin/sh
+
+set -e
+
+test_reg_startend() {
+	tmp=$(mktemp)
+	cat >$tmp.c <<-EOF
+		#include <regex.h>
+
+		int main() {
+		#ifdef REG_STARTEND
+			return 0;
+		#else
+			return 1;
+		#endif
+		}
+	EOF
+
+	${CC:-cc} $tmp.c -o $tmp.out
+	$tmp.out
+	r=$?
+	rm $tmp $tmp.c $tmp.out
+	return $r
+}
+
+usage() {
+	cat <<-EOF
+		Options:
+
+		  --with-pcre  Use pcre2-posix rather than regex.h from libc. Required
+		               for some platforms where regex.h doesn't support
+		               REG_STARTEND (e.g. musl).
+
+		               Default is to auto-detect if libc supports it.
+	EOF
+}
+
+pcre=0
+for f in "$@"; do
+	case $f in
+		-h|-help|--help)        usage; exit 0 ;;
+		-with-pcre|--with-pcre) pcre=1 ;;
+		*)
+			echo >&2 "unknown flag: $f"
+			echo
+			usage
+			exit 1
+	esac
+done
+
+echo '# Platform-specific options' >config.mk
+if [ $pcre -eq 1 ] || ! test_reg_startend; then
+	echo "using pcre2 regex.h"
+
+	echo '' >>config.mk
+	echo '# Use pcre2 because REG_STARTEND is not defined (e.g. on musl)' >>config.mk
+	echo 'CFLAGS  += -DWITH_PCRE=1 `pcre2-config --cflags-posix`'         >>config.mk
+	echo 'LDFLAGS += `pcre2-config --libs-posix`'                         >>config.mk
+else
+	echo "using libc regex.h"
+fi

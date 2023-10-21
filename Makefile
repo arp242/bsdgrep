@@ -4,11 +4,13 @@ CFLAGS ?= -O2
 
 .PHONY: all clean check install install-zgrep
 
+include config.mk
+
 all:
 	${CC} -std=c99 -pedantic -Wall -D_GNU_SOURCE=1 ${CFLAGS} ${LDFLAGS} -o grep *.c
 
 clean:
-	rm -f grep egrep fgrep rgrep
+	rm -f grep egrep fgrep rgrep config.mk
 
 check: all
 	@./test.zsh ${CHECK}

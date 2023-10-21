@@ -1,18 +1,30 @@
+name: 'test'
+
 on:
   push:         {"branches": ["master"]}
   pull_request: {"branches": ["master"]}
 
 jobs:
-  test-gnu:
+  gnu:
     runs-on: 'ubuntu-latest'
     steps:
     - uses: 'actions/checkout@v3'
     - run: 'sudo apt-get install -y zsh'
+    - run: './configure'
     - run: 'CHECK=-v make check'
 
-  test-musl:
+  pcre:
     runs-on: 'ubuntu-latest'
     steps:
     - uses: 'actions/checkout@v3'
-    - run: 'sudo apt-get install -y zsh musl-tools'
+    - run: 'sudo apt-get install -y zsh libpcre2-dev'
+    - run: './configure --with-pcre'
+    - run: 'CHECK=-v make check'
+
+  musl:
+    runs-on: 'ubuntu-latest'
+    steps:
+    - uses: 'actions/checkout@v3'
+    - run: 'sudo apt-get install -y zsh musl-tools libpcre2-dev'
+    - run: 'CC=musl-gcc ./configure'
     - run: 'CC=musl-gcc CHECK=-v make check'
