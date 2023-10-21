@@ -15,12 +15,12 @@ egrep=(timeout -v 0.4s $dir/egrep)
 rgrep=(timeout -v 0.4s $dir/rgrep)
 zgrep=(timeout -v 0.4s $dir/zgrep.sh)
 testdata=$dir/testdata
-verbose=0
+integer verbose=0
 run=()
 for f in $argv; do
 	case $f in
-		-v|-verbose|--verbose) verbose=1 ;;
-		*)                     run+=$f   ;;
+		-v|-verbose|--verbose) verbose+=1 ;;
+		*)                     run+=$f    ;;
 	esac
 done
 
@@ -49,7 +49,12 @@ main() {
 			print -f '=== %-32s' $f
 		fi
 		tmp=$(mktemp -d)
-		out=$(cd $tmp && $f 2>&1)
+		# (( $verbose > 1 )) && set -x
+		out=$(
+			cd $tmp
+			(( $verbose > 1 )) && set -x
+			$f 2>&1
+		)
 		s=$status
 
 		if (( $s )); then
