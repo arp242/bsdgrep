@@ -3,7 +3,7 @@ CC     ?= cc
 PREFIX ?= /usr/local
 CFLAGS ?= -O2
 
-.PHONY: all clean check install install-extra
+.PHONY: all clean check install
 
 all:
 	${CC} -std=c99 -pedantic -Wall -D_GNU_SOURCE=1 ${CFLAGS} ${LDFLAGS} -o grep *.c
