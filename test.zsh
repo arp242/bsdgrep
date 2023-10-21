@@ -45,6 +45,9 @@ main() {
 			(( $found )) || continue
 		fi
 
+		if (( $verbose )); then
+			print -f '=== %-32s' $f
+		fi
 		tmp=$(mktemp -d)
 		out=$(cd $tmp && $f 2>&1)
 		s=$status
@@ -57,8 +60,15 @@ main() {
 			p='PASS'
 		fi
 		if (( $verbose || $s )); then
-			print -f '=== %-32s %s\n' $f $p
+			if (( ! $verbose )); then
+				print -f '=== %-32s' $f
+			fi
+			print $p
 			if [[ -n $out ]]; then
+				if (( $#out > 400 )) then
+					out=$out[1,400]
+					out+=$'\n[...trim...]'
+				fi
 				out=${out//$'\n'/$'\n\t'}
 				print -r -- $'\t'$out
 			fi
