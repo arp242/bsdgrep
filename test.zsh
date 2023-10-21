@@ -81,6 +81,7 @@ main() {
 		(( $failed )) && p='FAIL'
 		print "\n$p  $passed passed; $failed failed"
 	fi
+	exit $(( $failed > 0 ))
 }
 
 nonzero() {
